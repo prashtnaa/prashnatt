@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Little Surprise</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
+  body {
+    background: #000;
+  }
+
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .screen.active { display: flex; }
+
+  /* Soft overlay so the text remains readable over the supplied images. */
+  .screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.16);
+    pointer-events: none;
+  }
+
+  #screen1 {
+    background: url("first.jpeg") center center / cover no-repeat;
+  }
+
+  #screen2 {
+    background: url("second.jpeg") center center / cover no-repeat;
+  }
+
+  .card {
+    position: relative;
+    z-index: 2;
+    width: min(88vw, 650px);
+    padding: 28px 24px 30px;
+    border-radius: 24px;
+    background: rgba(255,255,255,.86);
+    box-shadow: 0 15px 50px rgba(0,0,0,.25);
+    backdrop-filter: blur(5px);
+    animation: pop .7s ease both;
+  }
+
+  .question {
+    margin: 0 auto 25px;
+    color: #222;
+    font-size: clamp(24px, 5vw, 43px);
+    line-height: 1.12;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    margin: 0 auto 24px;
+    color: #333;
+    font-size: clamp(22px, 4vw, 36px);
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .choices {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    min-height: 75px;
+    position: relative;
+  }
+
+  button {
+    border: 0;
+    border-radius: 999px;
+    padding: 14px 34px;
+    min-width: 115px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #222;
+    background: #fff;
+    box-shadow: 0 7px 18px rgba(0,0,0,.18);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0,0,0,.22);
+  }
+
+  #yesBtn, #okBtn {
+    background: #f6d6df;
+  }
+
+  #noBtn {
+    position: relative;
+  }
+
+  #countdown {
+    background: #000;
+    color: white;
+    flex-direction: column;
+  }
+
+  #countNumber {
+    font-family: Arial, sans-serif;
+    font-size: clamp(90px, 20vw, 190px);
+    font-weight: 300;
+    line-height: 1;
+    animation: countPulse .9s ease both;
+  }
+
+  #countText {
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    letter-spacing: 5px;
+    opacity: .55;
+  }
+
+  #videoScreen {
+    background: #000;
+  }
+
+  #surpriseVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+  }
+
+  #heheScreen {
+    background: #000;
+    color: white;
+  }
+
+  #hehe {
+    font-family: Arial, sans-serif;
+    font-size: clamp(70px, 15vw, 150px);
+    font-weight: 800;
+    letter-spacing: 3px;
+    animation: heheIn 1s cubic-bezier(.2,.9,.25,1.3) both;
+  }
+
+  @keyframes pop {
+    from { opacity: 0; transform: scale(.82) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  @keyframes countPulse {
+    0% { opacity: 0; transform: scale(1.35); }
+    30% { opacity: 1; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes heheIn {
+    from { opacity: 0; transform: scale(.35) rotate(-8deg); }
+    70% { opacity: 1; transform: scale(1.08) rotate(2deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .fadeOut { animation: fadeOut .45s ease forwards; }
+  .fadeIn { animation: fadeIn .65s ease forwards; }
+
+  @keyframes fadeOut { to { opacity: 0; } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 600px) {
+    .card { padding: 24px 17px 26px; }
+    .choices { gap: 12px; }
+    button { min-width: 105px; padding: 13px 25px; }
+  }
+</style>
+</head>
+
+<body>
+
+<section id="screen1" class="screen active">
+  <div class="card">
+    <p class="question">HEY! , DID YOU HAVE A TOUGH DAY TODAY?</p>
+    <div class="choices">
+      <button id="yesBtn">YES</button>
+      <button id="noBtn">NO</button>
+    </div>
+  </div>
+</section>
+
+<section id="screen2" class="screen">
+  <div class="card">
+    <p class="subtitle">ACTUALLY , I WANTED TO SHOW YOU SOMETHING ..... WANNA SEE?</p>
+    <button id="okBtn">OK</button>
+  </div>
+</section>
+
+<section id="countdown" class="screen">
+  <div id="countNumber">5</div>
+  <div id="countText">GET READY...</div>
+</section>
+
+<section id="videoScreen" class="screen">
+  <video id="surpriseVideo" playsinline preload="auto">
+    <source src="third.mp4" type="video/mp4">
+    Your browser does not support MP4 video.
+  </video>
+</section>
+
+<section id="heheScreen" class="screen">
+  <div id="hehe">HEHE</div>
+</section>
+
+<script>
+  const screens = {
+    first: document.getElementById("screen1"),
+    second: document.getElementById("screen2"),
+    countdown: document.getElementById("countdown"),
+    video: document.getElementById("videoScreen"),
+    hehe: document.getElementById("heheScreen")
+  };
+
+  function show(name) {
+    Object.values(screens).forEach(s => s.classList.remove("active"));
+    screens[name].classList.add("active");
+  }
+
+  // The NO button escapes the pointer whenever someone tries to click/tap it.
+  const noBtn = document.getElementById("noBtn");
+
+  function moveNoButton() {
+    const pad = 20;
+    const rect = noBtn.getBoundingClientRect();
+    const maxX = Math.max(pad, window.innerWidth - rect.width - pad);
+    const maxY = Math.max(pad, window.innerHeight - rect.height - pad);
+
+    noBtn.style.position = "fixed";
+    noBtn.style.left = (pad + Math.random() * (maxX - pad)) + "px";
+    noBtn.style.top = (pad + Math.random() * (maxY - pad)) + "px";
+    noBtn.style.zIndex = 20;
+  }
+
+  noBtn.addEventListener("mouseenter", moveNoButton);
+  noBtn.addEventListener("pointerdown", function(e) {
+    e.preventDefault();
+    moveNoButton();
+  });
+  noBtn.addEventListener("touchstart", function(e) {
+    e.preventDefault();
+    moveNoButton();
+  }, {passive:false});
+
+  document.getElementById("yesBtn").addEventListener("click", () => {
+    show("second");
+  });
+
+  document.getElementById("okBtn").addEventListener("click", () => {
+    show("countdown");
+    runCountdown();
+  });
+
+  let countdownStarted = false;
+
+  function runCountdown() {
+    if (countdownStarted) return;
+    countdownStarted = true;
+
+    const number = document.getElementById("countNumber");
+    let n = 5;
+
+    number.textContent = n;
+
+    const timer = setInterval(() => {
+      n--;
+
+      if (n > 0) {
+        number.textContent = n;
+        // Restart the number animation each second.
+        number.style.animation = "none";
+        void number.offsetWidth;
+        number.style.animation = "countPulse .9s ease both";
+      } else {
+        clearInterval(timer);
+        playSurprise();
+      }
+    }, 1000);
+  }
+
+  function playSurprise() {
+    const video = document.getElementById("surpriseVideo");
+    show("video");
+
+    video.currentTime = 0;
+
+    // The OK click counts as a user interaction, so browsers normally permit playback.
+    const promise = video.play();
+
+    if (promise !== undefined) {
+      promise.catch(() => {
+        // If a browser blocks playback, clicking the video starts it.
+        video.controls = true;
+      });
+    }
+  }
+
+  document.getElementById("surpriseVideo").addEventListener("ended", () => {
+    setTimeout(() => {
+      show("hehe");
+    }, 2000);
+  });
+</script>
+
+</body>
+</html>
